@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.didi.mapper.EShareMapper">
+	<resultMap id="BaseResultMap" type="com.didi.model.EShare">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="user_id" jdbcType="VARCHAR" property="userId" />
+		<result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
+		
+		<result column="imageHeight" jdbcType="INTEGER" property="imageHeight"/>
+		<result column="imageWidth" jdbcType="INTEGER" property="imageWidth"/>
+		
+		<result column="share_date" jdbcType="TIMESTAMP" property="shareDate" />
+		<result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="longitude" jdbcType="DOUBLE" property="longitude" />
+		<result column="latitude" jdbcType="DOUBLE" property="latitude" />
+ 		<result column="count" property="count" jdbcType="INTEGER" />
+ 	<!-- 	<association property="device" column="device_id"
+			select="com.didi.mapper.EDeviceMapper.selectByPrimaryKey" /> -->
+		<association property="user" column="user_id" 
+			select="com.didi.mapper.EShareMapper.getUserById" />
+			
+	</resultMap>
+	
+	<sql id="Example_Where_Clause">
+		<where>
+			<foreach collection="oredCriteria" item="criteria" separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value}
+									and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach close=")" collection="criterion.value" item="listItem"
+										open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Update_By_Example_Where_Clause">
+		<where>
+			<foreach collection="example.oredCriteria" item="criteria"
+				separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value}
+									and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach close=")" collection="criterion.value" item="listItem"
+										open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	
+	<sql id="Base_Column_List">
+		    id, user_id, device_id, content, img_url, imageHeight, imageWidth, share_date, is_delete, 
+    address, longitude, latitude, count
+	</sql>
+	
+		
+	<select id="selectByExample" parameterType="com.didi.model.EShareExample"
+		resultMap="BaseResultMap">
+
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		
+		from e_share
+		<where>
+			1=1
+			<if test="userId != null">
+				and user_id = #{userId,jdbcType=VARCHAR}
+			</if>
+			<if test="deviceId != null">
+				and device_id = #{deviceId,jdbcType=VARCHAR}
+			</if>
+			<if test="isDelete != null">
+				and is_delete = #{isDelete,jdbcType=INTEGER}
+			</if>
+		</where>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+		<if test="limit != null">
+			<if test="offset != null">
+				limit ${offset}, ${limit}
+			</if>
+			<if test="offset == null">
+				limit ${limit}
+			</if>
+		</if>
+	
+	</select>
+	
+
+	
+	
+	<select id="selectByExampleHot" parameterType="com.didi.model.EShareExample"
+		resultMap="BaseResultMap">
+    
+          SELECT * FROM e_share ORDER BY COUNT DESC LIMIT 100;
+
+	</select>
+
+	
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from e_share
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	
+		
+   <select id="getUserLastShare" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from e_share		
+		WHERE user_id=#{userId,jdbcType=VARCHAR} 
+		AND share_date=(SELECT MAX(share_date) 
+		FROM e_share WHERE user_id=#{userId,jdbcType=VARCHAR});
+
+	</select>
+	
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		e_share
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="deleteByExample" parameterType="com.didi.model.EShareExample">
+		delete from e_share
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</delete>
+	
+<!-- 	<delete id="deleteByRecive" parameterType="com.didi.model.EShareExample">
+		delete from e_share	
+			
+		WHERE
+		user_id = #{userId,jdbcType=VARCHAR} and device_id =
+		#{deviceId,jdbcType=VARCHAR}
+	    and  share_date
+		BETWEEN #{startDate,jdbcType=DATE} AND
+		DATE_ADD(#{endDate,jdbcType=DATE} ,INTERVAL 1 DAY); 
+		
+	</delete> -->
+	
+    <update id="deleteByRecive" parameterType="com.didi.model.EShare">
+		
+		update e_share 
+		set is_delete=1
+		where
+		user_id = #{userId,jdbcType=VARCHAR} and device_id =
+		#{deviceId,jdbcType=VARCHAR}
+	    and  share_date
+		BETWEEN #{startDate,jdbcType=DATE} AND
+		DATE_ADD(#{endDate,jdbcType=DATE} ,INTERVAL 1 DAY);
+		
+    </update>
+    
+	<insert id="insert" parameterType="com.didi.model.EShare">
+		insert into e_share (id,
+		user_id, device_id,
+		content, imageWidth,imageHeight,img_url, share_date,address, longitude,
+		latitude,
+		is_delete)
+		values
+		(#{id,jdbcType=VARCHAR},
+		#{userId,jdbcType=VARCHAR},
+		#{deviceId,jdbcType=VARCHAR},
+		#{content,jdbcType=VARCHAR},
+		#{imageWidth,jdbcType=INTEGER},
+		#{imageHeight,jdbcType=INTEGER},
+		#{imgUrl,jdbcType=VARCHAR},
+		#{shareDate,jdbcType=TIMESTAMP},#{address,jdbcType=VARCHAR},
+		#{longitude,jdbcType=DOUBLE},
+		#{latitude,jdbcType=DOUBLE},
+		#{isDelete,jdbcType=INTEGER})
+	</insert>
+	
+	<insert id="insertSelective" parameterType="com.didi.model.EShare">
+		insert into e_share
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="deviceId != null">
+				device_id,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="imgUrl != null">
+				img_url,
+			</if>
+			<if test="shareDate != null">
+				share_date,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="longitude != null">
+				longitude,
+			</if>
+			<if test="latitude != null">
+				latitude,
+			</if>
+			<if test="isDelete != null">
+				is_delete,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="imgUrl != null">
+				#{imgUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="shareDate != null">
+				#{shareDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null">
+				#{longitude,jdbcType=DOUBLE},
+			</if>
+			<if test="latitude != null">
+				#{latitude,jdbcType=DOUBLE},
+			</if>
+			<if test="isDelete != null">
+				#{isDelete,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="countByExample" parameterType="com.didi.model.EShareExample"
+		resultType="java.lang.Integer">
+		select count(*) from e_share
+		<where>
+			1=1
+			<if test="userId != null">
+				and user_id = #{userId,jdbcType=VARCHAR}
+			</if>
+			<if test="deviceId != null">
+				and device_id = #{deviceId,jdbcType=VARCHAR}
+			</if>
+			<if test="isDelete != null">
+				and is_delete = #{isDelete,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	 <update id="updateByExampleSelective" parameterType="map" >
+    update e_share
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deviceId != null" >
+        device_id = #{record.deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.content != null" >
+        content = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.imgUrl != null" >
+        img_url = #{record.imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.imageheight != null" >
+        imageHeight = #{record.imageHeight,jdbcType=INTEGER},
+      </if>
+      <if test="record.imagewidth != null" >
+        imageWidth = #{record.imageWidth,jdbcType=INTEGER},
+      </if>
+      <if test="record.shareDate != null" >
+        share_date = #{record.shareDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isDelete != null" >
+        is_delete = #{record.isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="record.address != null" >
+        address = #{record.address,jdbcType=VARCHAR},
+      </if>
+      <if test="record.longitude != null" >
+        longitude = #{record.longitude,jdbcType=DOUBLE},
+      </if>
+      <if test="record.latitude != null" >
+        latitude = #{record.latitude,jdbcType=DOUBLE},
+      </if>
+      <if test="record.count != null" >
+        count = #{record.count,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+ 
+  <update id="updateByExample" parameterType="map" >
+    update e_share
+    set id = #{record.id,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      device_id = #{record.deviceId,jdbcType=VARCHAR},
+      content = #{record.content,jdbcType=VARCHAR},
+      img_url = #{record.imgUrl,jdbcType=VARCHAR},
+      imageHeight = #{record.imageHeight,jdbcType=INTEGER},
+      imageWidth = #{record.imageWidth,jdbcType=INTEGER},
+      share_date = #{record.shareDate,jdbcType=TIMESTAMP},
+      is_delete = #{record.isDelete,jdbcType=INTEGER},
+      address = #{record.address,jdbcType=VARCHAR},
+      longitude = #{record.longitude,jdbcType=DOUBLE},
+      latitude = #{record.latitude,jdbcType=DOUBLE},
+      count = #{record.count,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+ 
+  <update id="updateByPrimaryKeySelective" parameterType="com.didi.model.EShare" >
+    update e_share
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="imgUrl != null" >
+        img_url = #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="imageheight != null" >
+        imageHeight = #{imageHeight,jdbcType=INTEGER},
+      </if>
+      <if test="imagewidth != null" >
+        imageWidth = #{imageWidth,jdbcType=INTEGER},
+      </if>
+      <if test="shareDate != null" >
+        share_date = #{shareDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null" >
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        longitude = #{longitude,jdbcType=DOUBLE},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude,jdbcType=DOUBLE},
+      </if>
+      <if test="count != null" >
+        count = #{count,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.didi.model.EShare" >
+    update e_share
+    set user_id = #{userId,jdbcType=VARCHAR},
+      device_id = #{deviceId,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      img_url = #{imgUrl,jdbcType=VARCHAR},
+      imageHeight = #{imageHeight,jdbcType=INTEGER},
+      imageWidth = #{imageWidth,jdbcType=INTEGER},
+      share_date = #{shareDate,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=INTEGER},
+      address = #{address,jdbcType=VARCHAR},
+      longitude = #{longitude,jdbcType=DOUBLE},
+      latitude = #{latitude,jdbcType=DOUBLE},
+      count = #{count,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="getDayHot" resultMap="BaseResultMap">     
+SELECT * FROM e_share WHERE DATE_FORMAT(now(),"%Y-%m-%d")=DATE_FORMAT(share_date,"%Y-%m-%d")  ORDER BY COUNT DESC limit 1;
+  </select>
+	
+  <select id="getWeekHot" resultMap="BaseResultMap">
+      
+SELECT * FROM e_share WHERE DATE_FORMAT(now(),"%U")=DATE_FORMAT(share_date,"%U")  ORDER BY COUNT DESC limit 1;
+  </select>
+  
+    <select id="getMonthHot" resultMap="BaseResultMap">
+      
+SELECT * FROM e_share WHERE DATE_FORMAT(now(),"%Y-%m")=DATE_FORMAT(share_date,"%Y-%m")  ORDER BY COUNT DESC limit 1;
+  </select>
+	
+	
+ <select id="getMyNew" resultMap="BaseResultMap" parameterType="java.lang.String">
+      
+SELECT * FROM e_share where user_id = #{userId,jdbcType=VARCHAR}  ORDER BY share_date DESC limit 1;
+  </select>
+	
+	
+	
+	
+	
+
+	<select id="getUserById" parameterType="java.lang.String"
+		resultType="java.util.Map">
+		SELECT
+		u.id,
+		u.nick_name,
+		u.profile_image,
+	 	u.sex,
+		u.`name`,
+
+		u.`phone`
+		
+		FROM
+		e_user u
+
+		WHERE
+		u.id =
+		#{user_id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getShareDayCount" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		SELECT
+		count(
+		DISTINCT (
+		DATE_FORMAT(share_date, '%Y-%m-%d')))
+		FROM
+		e_share		
+		WHERE
+		user_id = #{userId,jdbcType=VARCHAR} and 
+		share_date
+		BETWEEN #{startDate,jdbcType=DATE} AND
+		DATE_ADD(#{endDate,jdbcType=DATE} ,INTERVAL 1 DAY); 
+	</select>
+
+	<select id="getDayShareCount" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		
+		SELECT COUNT(*) FROM e_share 
+		WHERE user_id = #{userId,jdbcType=VARCHAR}
+		AND DATE_FORMAT(share_date, '%Y-%m-%d')=DATE_FORMAT(NOW(), '%Y-%m-%d'); 
+				
+		
+	</select>	
+	
+
+    <select id="selectUserById" parameterType="java.lang.String"
+		resultType="java.util.Map">
+		SELECT
+		u.id,
+		u.nick_name,
+		u.profile_image,
+		u.`name`,
+		u.wechat_id,
+		u.electric
+	   
+		FROM
+		e_user u
+		
+		WHERE
+		u.id =
+		#{userId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="addElectric" parameterType="com.didi.model.EUser">
+		UPDATE e_user u 
+		SET electric=electric+#{electric,jdbcType=VARCHAR}
+		
+        WHERE u.id=#{id,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="subElectric" parameterType="com.didi.model.EUser">
+      
+        UPDATE e_user u 
+		SET electric=electric-#{electric,jdbcType=VARCHAR}			
+        WHERE u.id=#{id,jdbcType=VARCHAR}  and u.electric>0      
+
+        
+	</update>
+	
+	<update id="subPoint" parameterType="java.lang.String">
+	    UPDATE e_user u SET POINT=POINT-1 
+        WHERE u.id=#{userId,jdbcType=VARCHAR} and u.POINT>0
+	</update>	
+	
+	
+	
+
+	
+	
+		
+</mapper>
