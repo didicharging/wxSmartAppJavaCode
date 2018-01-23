@@ -111,6 +111,29 @@ public class DeviceController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/getInvestList", method = RequestMethod.GET)
+	public Map<String, Object> getInvestList(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "10") int perPage, @RequestParam(required = true) String userId) {
+
+		Map<String, Object> res = new HashMap<String, Object>();
+		try {
+			Map<String, Object> map = deviceService.MyInvestList(userId, 0, 0);
+			
+			List<EDevice> list = (List<EDevice>) map.get("data");
+
+			res.put("result", list);
+			res.put("status", 200);
+			res.put("message", "查找成功!");
+			return res;
+		} catch (Exception e) {
+			e.printStackTrace();
+			res.put("status", 210);
+			res.put("message", "查找失败!错误原因：" + e.getMessage());
+			return res;
+		}
+
+	}
 
 		
 	/**

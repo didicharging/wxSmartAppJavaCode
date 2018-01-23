@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -63,8 +64,9 @@ public class PayController {
 
 	@Resource
 	OrdersService orderService;
-
-	// 接受钱包余额充值支付结果通知
+	
+	private Logger log = Logger.getLogger(PayController.class);
+// 接受钱包余额充值支付结果通知
 //	@RequestMapping(value = "/getDebtReply")
 //	@ResponseBody
 //	public void getDebtReply(HttpServletRequest request, HttpServletResponse response) {
@@ -102,7 +104,77 @@ public class PayController {
 //			e.printStackTrace();
 //		}
 //	}
+	
+	
+/**
+ * 用于接收投资完成后的通知
+ * 
+ * */
+	
+	@RequestMapping(value = "/getInvestReply")
+	
+	@ResponseBody
+	public void getInvestReply(HttpServletRequest request, HttpServletResponse response) {
 
+		
+		
+		try {
+			PayReply reply = WeixinUtil.getPayReply(request);
+			String result_code = reply.getResult_code();
+			String return_code = reply.getReturn_code();
+
+			if (result_code != null && return_code != null && result_code.equalsIgnoreCase("SUCCESS")
+					&& return_code.equalsIgnoreCase("SUCCESS")) {
+
+				if (true) {
+
+					String walletLogId = reply.getOut_trade_no();
+					EWalletLog log = (EWalletLog) walletLogService.get(walletLogId);
+
+					if (log.getTransactionId() == null) {
+                        //第一步 标记为已支付
+						log.setTransactionId(reply.getTransaction_id());
+						walletLogService.edit(log);
+                        
+						//第二步计算投资份数
+				        int number=(int) (log.getMoney().doubleValue()/0.01);
+//			           number=2;
+				        
+				       Map<String, Object> param = new HashMap<String, Object>();
+				       param.put("userId", log.getUserId());
+				   //    param.put("userId", "7d248e45aafb4628aac7c39f56be6b6c");
+				       param.put("number", number);
+		      
+				       System.out.println(number);
+				       				       
+				       int count=deviceService.investDevice(param);
+					   System.out.println(count);
+					
+
+
+
+					}
+					// 推送接收成功消息给微信
+					OutputStream out = response.getOutputStream();
+					String result = "<xml><return_code><![CDATA[SUCCESS]]></return_code>";
+					result += "<return_msg><![CDATA[OK]]></return_msg></xml>";
+
+					out.write(result.getBytes("utf-8"));
+					out.flush();
+					out.close();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/****
+	 *  代码主要用于接收充值完成后的通知
+	 * 
+	 * 
+	 * */
 	@RequestMapping(value = "/getRechargeReply")
 	@ResponseBody
 	public void getRechargeReply(HttpServletRequest request, HttpServletResponse response) {
@@ -176,6 +248,8 @@ public class PayController {
 		}
 	}
 
+	
+	
 	@RequestMapping(value = "/buyDeviceReply")
 	@ResponseBody
 	public void buyDeviceReply(HttpServletRequest request, HttpServletResponse response) {
@@ -215,6 +289,13 @@ public class PayController {
 		}
 	}
 
+	
+	
+	
+	
+	
+	
+	
 	@RequestMapping(value = "/getShareReply")
 	@ResponseBody
 	public void getShareReply(HttpServletRequest request, HttpServletResponse response) {
@@ -309,7 +390,7 @@ public class PayController {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(); 
 		}
 	}
 
@@ -348,7 +429,7 @@ public class PayController {
 			log.setId(TextUtils.getIdByUUID());
 
 			PrepayResultMsg msg = WeixinUtil.getPrepayMsg((int) (rechargeMoney * 100), openId, "127.0.0.1",
-					Constant.ROOT_PATH + "pay/getRechargeReply", log.getId());
+					Constant.ROOT_PATH + "pay/getInvestReply", log.getId());
 
 			log.setLogDate(new Date());
 			log.setLogType(0);
@@ -384,7 +465,86 @@ public class PayController {
 			return res;
 		}
 	}
+	
+	
+	
+	@RequestMapping(value = "/invest", method = RequestMethod.POST)
+	public Map<String, Object> invest(@RequestBody Map<String, Object> param) {
+		Map<String, Object> res = new HashMap<String, Object>();
+		try {
+			
+			Object userId = param.get("userId");
+		   //这里的坑在于number 是小程序的关键字 所以用numbe
+			Object number = param.get("numbe");
+			
+			if (userId == null || userId.toString().equalsIgnoreCase("")) {
+				res.put("status", 210);
+				res.put("message", "充值人ID不能为空");
+				return res;
+			}
+			if (number == null || number.toString().equalsIgnoreCase("") || Double.parseDouble(number.toString()) <= 0) {
+				res.put("status", 210);
+				res.put("message", "充值份数必须大于0");
+				return res;
+			}
 
+//			int inverstMoney = Integer.parseInt(number.toString())*1000;
+			double inverstMoney = Double.parseDouble(number.toString())*0.01;
+			
+			EUser user = userService.get(userId.toString());
+
+			if (user == null) {
+				res.put("status", 210);
+				res.put("message", "投资用户不存在");
+				return res;
+			}
+
+			
+			String openId = user.getWechatId();
+			EWalletLog log = new EWalletLog();
+			log.setId(TextUtils.getIdByUUID());
+
+			PrepayResultMsg msg = WeixinUtil.getPrepayMsg((int) (inverstMoney * 100), openId, "127.0.0.1",
+					Constant.ROOT_PATH + "pay/getInvestReply", log.getId());
+
+			log.setLogDate(new Date());
+			log.setLogType(EWalletLog.BILL_INVEST);
+
+			log.setMoney(new BigDecimal(inverstMoney));
+
+			log.setPrepayId(msg.getPrepay_id());
+			log.setUserId(userId.toString());
+
+			if (msg.getPrepay_id() != null) {
+				walletLogService.insert(log);
+
+				PayInfo payInfo = new PayInfo();
+
+				payInfo.setAppId(Constant.APPID);
+				payInfo.setNonceStr(WeixinUtil.getRandomString(32)); //
+				payInfo.setPayPackage("prepay_id=" + msg.getPrepay_id());
+				payInfo.setSignType("MD5");
+				payInfo.setTimeStamp(String.valueOf(new Date().getTime() / 1000));
+				String sign = WeixinUtil.getPayInfoSign(payInfo);
+				payInfo.setPaySign(sign);
+
+				res.put("payInfo", payInfo);
+			} else {
+				res.put("prepayRetMsg", msg);
+			}
+
+			return res;
+		} catch (Exception e) {
+			e.printStackTrace();
+			res.put("status", 210);
+			res.put("message", "充值失败!错误原因：" + e.getMessage());
+			return res;
+		}
+	}
+
+	
+	
+	
 	// 支付押金
 	@RequestMapping(value = "/payShare", method = RequestMethod.GET)
 	public Map<String, Object> payShare(@RequestParam(required = true) String userId,

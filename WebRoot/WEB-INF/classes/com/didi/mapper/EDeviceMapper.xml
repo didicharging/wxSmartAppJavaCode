@@ -113,6 +113,7 @@
       order by ${orderByClause}
     </if>
   </select>
+  
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
@@ -151,6 +152,7 @@
       #{isbuy,jdbcType=INTEGER}, #{kW,jdbcType=REAL}, #{kM,jdbcType=REAL}, #{kD,jdbcType=REAL}, 
       #{changeDdb,jdbcType=INTEGER}, #{function,jdbcType=VARCHAR})
   </insert>
+  
   <insert id="insertSelective" parameterType="com.didi.model.EDevice" >
     insert into e_device
     <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -415,6 +417,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
+  
   <update id="updateByExample" parameterType="map" >
     update e_device
     set id = #{record.id,jdbcType=VARCHAR},
@@ -448,6 +451,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
+  
   <update id="updateByPrimaryKeySelective" parameterType="com.didi.model.EDevice" >
     update e_device
     <set >
@@ -532,6 +536,7 @@
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  
   <update id="updateByPrimaryKey" parameterType="com.didi.model.EDevice" >
     update e_device
     set device_no = #{deviceNo,jdbcType=VARCHAR},
@@ -562,6 +567,16 @@
       function = #{function,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  
+  <update id="investDevice" parameterType="Map" >
+    update e_device
+    set owner = #{userId,jdbcType=VARCHAR}
+    where (type=5 or type =6) and owner ="ca2a1737154a4821a713a2cb431afd11" 
+    order by device_no desc limit #{number,jdbcType=INTEGER}
+    
+  </update>
+  
+  
   
    <select id="getByDeviceNo" parameterType="java.lang.String"
 		resultMap="BaseResultMap">

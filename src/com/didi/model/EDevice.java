@@ -23,11 +23,7 @@ public class EDevice {
 		
 	public static Integer SALE=1;
 	public static Integer NOT_SALE=2;	
-	
-	
-	
-	
-	
+		
 	//有线充电宝
 	public static Integer POWER_BACK=1; 
 	
@@ -54,11 +50,6 @@ public class EDevice {
 	//72V�����
     public static Integer LI_BATTERY_CHARGE_72=9;
 		
-    
-    
-    
-    
-    
     private String id;
 
     private String deviceNo;

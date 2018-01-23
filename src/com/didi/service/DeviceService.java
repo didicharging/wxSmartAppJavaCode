@@ -65,7 +65,7 @@ public class DeviceService {
 
 		
 	// 批量插入代码
-	@Test
+	
 	public void insertBitch() {
 		long min = 1001;
 		long max = 1200;
@@ -345,6 +345,33 @@ public class DeviceService {
 						
 		return null;
 		
+	}
+
+
+	public int investDevice(Map<String, Object> param) {
+		// TODO Auto-generated method stub	
+
+		return mapper.investDevice(param);
+	
+	}
+
+
+	public Map<String, Object> MyInvestList(String userId, int page, int perPage) {
+		// TODO Auto-generated method stub
+		EDeviceExample example = new EDeviceExample();
+		if (page > 0 && perPage > 0) {
+			example.setLimit(perPage);
+			example.setOffset((page - 1) * perPage);
+		}
+		EDeviceExample.Criteria criteria = example.createCriteria();
+		criteria.andOwnerEqualTo(userId);
+		example.setOrderByClause("id");
+		List<EDevice> list = mapper.selectByExample(example);		
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("data", list);
+		result.put("total", mapper.countByExample(example));
+		return result;
+	
 	}
 
 	

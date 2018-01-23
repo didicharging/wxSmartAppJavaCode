@@ -21,15 +21,15 @@
     
    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
 
-<!--  	    <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-		<property name="url" value="jdbc:mysql://47.95.216.221:3306/dididb"/>
-		<property name="username" value="root"/>
-		<property name="password" value="lilei123"/>   -->
-		
 	    <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://rm-2ze5y9x4lhu9xy103o.mysql.rds.aliyuncs.com:3306/dididb"/>
+		<property name="username" value="biyangang"/>
+		<property name="password" value="Evun122018"/>  
+		
+<!-- 	    <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
 		<property name="url" value="jdbc:mysql://rm-2zea4xn1r3j217m72do.mysql.rds.aliyuncs.com/dididb"/>
 		<property name="username" value="didi"/>
-		<property name="password" value="Evunclub112017"/> 
+		<property name="password" value="Evunclub112017"/>  -->
 							  
 	</bean>
 	
