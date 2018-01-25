@@ -43,6 +43,7 @@
 			</foreach>
 		</where>
 	</sql>
+	
 	<sql id="Update_By_Example_Where_Clause">
 		<where>
 			<foreach collection="example.oredCriteria" item="criteria"
@@ -143,6 +144,7 @@
 			<include refid="Example_Where_Clause" />
 		</if>
 	</delete>
+	
 	<insert id="insert" parameterType="com.didi.model.EChat">
 		insert into e_chat (id,
 		from_user, to_user,
@@ -156,6 +158,7 @@
 		#{isRead,jdbcType=INTEGER}
 		)
 	</insert>
+	
 	<insert id="insertSelective" parameterType="com.didi.model.EChat">
 		insert into e_chat
 		<trim prefix="(" suffix=")" suffixOverrides=",">

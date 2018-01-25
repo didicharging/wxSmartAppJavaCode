@@ -15,6 +15,10 @@ public class EMovie {
 
     private Date updateTime;
 
+    private String title;
+
+    private String description;
+
     public String getId() {
         return id;
     }
@@ -63,11 +67,19 @@ public class EMovie {
         this.updateTime = updateTime;
     }
 
-	@Override
-	public String toString() {
-		return "EMovie [id=" + id + ", movieUrl=" + movieUrl + ", imgUrl=" + imgUrl + ", count=" + count
-				+ ", createTime=" + createTime + ", updateTime=" + updateTime + "]";
-	}
-    
-    
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title == null ? null : title.trim();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description == null ? null : description.trim();
+    }
 }
