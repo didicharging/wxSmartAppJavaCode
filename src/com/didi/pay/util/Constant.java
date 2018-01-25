@@ -15,4 +15,3 @@ public class Constant {
 	
 	public static final String COM_REFUND_URL="https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
 }
-

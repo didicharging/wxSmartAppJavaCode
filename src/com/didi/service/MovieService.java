@@ -36,7 +36,7 @@ public class MovieService {
 			example.setLimit(perPage);
 			example.setOffset((page - 1) * perPage);
 		}
-
+		example.setOrderByClause("count desc");
 		List<EMovie> list = mapper.selectByExample(example);
 		result.put("data", list);
 		result.put("total", mapper.countByExample(example));
