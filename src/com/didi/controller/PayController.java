@@ -597,6 +597,7 @@ public class PayController {
 				payInfo.setPaySign(sign);
 
 				res.put("payInfo", payInfo);
+				
 				res.put("status", 200);
 				res.put("message", "请支付");
 			} else {
