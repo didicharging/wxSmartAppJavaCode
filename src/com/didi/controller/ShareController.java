@@ -73,7 +73,11 @@ public class ShareController {
 			Object shareId = param.get("shareId");
 			Object actType = param.get("actType");
 			Object content = param.get("content");
-
+             
+			log.info("测试测试测试");
+			log.error("error error error");
+			
+			
 			if (null == userId || null == shareId || null == actType) {
 				res.put("status", 210);
 				res.put("message", "参数输入不能为空!");
@@ -344,6 +348,9 @@ public class ShareController {
 			@RequestParam(defaultValue = "new") String status) {
 
 		log.info("不是这样的");
+		
+		log.info("测试测试测试");
+		log.error("error error error");
 		
 		Map<String, Object> res = new HashMap<String, Object>();
 		Map<String, Object> map =new HashMap<String, Object>();

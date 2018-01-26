@@ -38,6 +38,8 @@ public interface EDeviceMapper {
 	Map<String, Object> getDetail(String id);
 
 	EDevice getByDeviceNo(String deviceNo);
+
+	int investDevice(Map<String, Object> param);
     
     
 }

@@ -32,6 +32,8 @@ public class HttpclientUtil {
 		StringBuffer result = new StringBuffer();
 		KeyStore keyStore = KeyStore.getInstance("PKCS12");
 		Resource resource = new ClassPathResource("apiclient_cert.p12");
+		
+		
 		try {
 			keyStore.load(resource.getInputStream(),
 					Constant.MCHID.toCharArray());
