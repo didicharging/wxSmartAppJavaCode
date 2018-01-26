@@ -93,7 +93,8 @@ public class MovieController {
 			   movieVisit.setCreateTime(new Date());
 			   movieVisit.setMovieid(id);
 			   movieVisit.setUserid(userId);
-			   movieVisit.setContent(content);
+			   movieVisit.setContent(new String(content.getBytes("ISO-8859-1"),"utf-8"));
+
 			   
 			   movieService.insertAct(movieVisit);
 			   
@@ -109,7 +110,6 @@ public class MovieController {
 		}
 	 
 	}
-	
 	
 	@RequestMapping(value = "/getAct", method = RequestMethod.GET)
 	public Map<String, Object> getAct(

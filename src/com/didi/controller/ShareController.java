@@ -180,9 +180,10 @@ public class ShareController {
 		
 		Random romdom =new Random();
 		res.put("url",urlList.get(romdom.nextInt(urlList.size()-1)));
+		
 		res.put("status", 200);
 		res.put("message", "查找成功!");		
-		return res;
+		return res; 
 	}
 	
 

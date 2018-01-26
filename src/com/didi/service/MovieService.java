@@ -3,8 +3,11 @@ package com.didi.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -74,11 +77,24 @@ public class MovieService {
 		   for (EMovieVisit eMovieVisit : visitList1) {
            actlist.add(eMovieVisit.getContent());			
 		}
+		
 		   
+		   
+		//第六步 相关视频 
+		   
+		EMovieExample example=new EMovieExample();
 		
+	    List<EMovie> relativeMovieList = mapper.selectByExample(example);
+			
+		Random romdom =new Random();
+		Set  set=new HashSet();
 		
-		
-		System.out.println("visitList" + visitList.size());
+		while(set.size()<3){
+			set.add(relativeMovieList.get(romdom.nextInt(relativeMovieList.size()-1)));
+		}
+	    
+	       
+	    result.put("relativeMovie", set);		 
         result.put("danmu", actlist);
 		result.put("movie", movie);
 		result.put("passVisit", visitList);

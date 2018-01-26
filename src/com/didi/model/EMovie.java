@@ -18,7 +18,7 @@ public class EMovie {
     private String title;
 
     private String description;
-
+    
     public String getId() {
         return id;
     }
