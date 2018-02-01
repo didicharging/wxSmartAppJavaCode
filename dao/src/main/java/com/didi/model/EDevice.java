@@ -32,25 +32,25 @@ public class EDevice {
 	
 	//无线充电宝
 	public static Integer WIRESS_POWER_BACK=2;
-	
+	//汽车搭电宝
 	public static Integer STARTER=3;
 	
-	//48V﮵��  battery
+	//48V﮵锂电池
 	public static Integer LI_BATTERY_48=4;
 	
-	//64V﮵��
+	//64V﮵锂电池
 	public static Integer  LI_BATTERY_64=5;
 	
-	//72V﮵��
+	//72V﮵锂电池
     public static Integer LI_BATTERY_72=6;
 	
-	//48V�����
+	//48V充电器
     public static Integer LI_BATTERY_CHARGE_48=7;
     
-	//64V�����
+	//64V充电器
     public static Integer LI_BATTERY_CHARGE_64=8;
         
-	//72V�����
+	//72V充电器
     public static Integer LI_BATTERY_CHARGE_72=9;
 		
     

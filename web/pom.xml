@@ -75,14 +75,17 @@
 
 		<finalName>di</finalName>
 		<plugins>
+		
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
+			
+	 	    <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-			</plugin>
+			</plugin> 
+			
 		</plugins>
 
 	</build>

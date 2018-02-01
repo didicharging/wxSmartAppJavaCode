@@ -15,7 +15,7 @@ public interface EScaneLogMapper {
     int insert(EScaneLog record);
 
     int insertSelective(EScaneLog record);
-
+   
     List<EScaneLog> selectByExample(EScaneLogExample example);
 
     EScaneLog selectByPrimaryKey(String id);

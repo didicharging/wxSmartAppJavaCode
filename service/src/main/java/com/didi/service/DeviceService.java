@@ -188,7 +188,7 @@ public class DeviceService {
 		EOrdersExample ordersExample = new EOrdersExample();
 		EOrdersExample.Criteria orderCriteria = ordersExample.createCriteria();
 		orderCriteria.andUserIdEqualTo(device.getUserId());
-		orderCriteria.andDeviceNameEqualTo(device.getName());
+		
 		orderCriteria.andStartDateLessThanOrEqualTo(scaneLog.getStartDate());
 		ordersExample.setOrderByClause("create_time desc");
 
@@ -202,7 +202,7 @@ public class DeviceService {
 			orders.setState(EOrders.PASS);            				
 		}else{
 			orders.setDeviceId(null);		
-		}
+		} 
 		
 		device.setUserId(null);
 		mapper.updateByPrimaryKey(device);
@@ -212,7 +212,7 @@ public class DeviceService {
 		
 	}
 
-	public int RentalDevice(EDevice device, String userId) throws Exception {
+	public int RentalDevice(EDevice device, String userId,int count) throws Exception {
 
 		
 		EUser user =userMapper.selectByPrimaryKey(userId);
@@ -254,19 +254,19 @@ public class DeviceService {
 		
 		if (device.getRentalType() == EDevice.RENTAL_BY_HOUR) {
 			rental = device.getRentalH();
-			calendar.add(Calendar.HOUR, 1);
+			calendar.add(Calendar.HOUR, count);
 			endTime = calendar.getTime();
 		}
 
 		if (device.getRentalType() == EDevice.RENTAL_BY_DAY) {
 			rental = device.getRental();
-			calendar.add(Calendar.DATE, 1);
+			calendar.add(Calendar.DATE, count);
 			endTime = calendar.getTime();
 		}
 
 		if (device.getRentalType() == EDevice.RENTAL_BY_MONTH) {
 			rental = device.getRentalM();
-			calendar.add(Calendar.MONTH, 1);
+			calendar.add(Calendar.MONTH, count);
 			endTime = calendar.getTime();
 		}
 

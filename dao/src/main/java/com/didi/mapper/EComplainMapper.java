@@ -27,6 +27,6 @@ public interface EComplainMapper {
     int updateByExample(@Param("record") EComplain record, @Param("example") EComplainExample example);
 
     int updateByPrimaryKeySelective(EComplain record);
-
+    	
     int updateByPrimaryKey(EComplain record);
 }

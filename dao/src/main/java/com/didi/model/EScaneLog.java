@@ -1,13 +1,21 @@
+
 package com.didi.model;
 
 import java.util.Date;
 
 public class EScaneLog {
 	
+	/**
+	 * 下面是用户所有的可能操作
+	 * 锂电池是 租电 充电 领回设备 报修 续租 换电  充电侠充电
+	 * 搭电宝 领回 报修 报废 搭电
+	 * 充电宝 领回 报废  
+	 * */
+	
 	//用户租用设备
 	public static Integer RENT_DEVICE=1;
 	
-	//充电
+	//充电侠充电
 	public static Integer CHARGE_DEVICE=2;
 	
 	//设备投诉
@@ -36,9 +44,14 @@ public class EScaneLog {
 	public static Integer RECIVE_DEVICE=11;
     
 	//汽车搭电
-	public static Integer START_DEVICE=12;
+	public static Integer START_SERVICE=12;
 	
-
+	//续租	
+	public static Integer CONTINUE_RENT=13;
+	
+	//用户充电
+	public static Integer USER_CHARGE=14;
+	
     private String id;
 
     private String userId;

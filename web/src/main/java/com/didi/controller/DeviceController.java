@@ -115,165 +115,7 @@ public class DeviceController {
 
 	}
 
-	/**
-	 * 功能：扫码后功能判断 1.充电侠直接扫码取回 2.有换电资格直接换电 3.普通用户 只能租就直接租 否则接功能列表 返回值： 200领取成功了
-	 * 201拉取功能列表 210错误 211余额不足 213押金不足
-	 */
-	// @RequestMapping(value = "/getDeviceState", method = RequestMethod.GET)
-	// public Map<String, Object> getDeviceState(@RequestParam(required = true)
-	// String deviceNo,
-	// @RequestParam(required = true) String userId) {
-	//
-	// Map<String, Object> res = new HashMap<String, Object>();
-	//
-	// // 第一步检查参数
-	// EDevice device = deviceService.getByDeviceNo(deviceNo);
-	// if (device == null) {
-	// res.put("message", "设备编号错误");
-	// res.put("status", 210);
-	// return res;
-	// }
-	//
-	// EUser user = userService.get(userId);
-	// if (null == user) {
-	// res.put("status", 210);
-	// res.put("message", "查找失败，用户错误");
-	// return res;
-	// }
-	//
-	// EWallet wallet = walletService.getWalletByUser(userId);
-	//
-	// if (wallet == null) {
-	// wallet = new EWallet();
-	// wallet.setAmount(500);
-	// wallet.setId(TextUtils.getIdByUUID());
-	// wallet.setShareAmount(new BigDecimal(0));
-	// wallet.setUserId(userId);
-	// wallet.setRole(EWallet.NORMAL);
-	// walletService.insert(wallet);
-	// }
-	//
-	// System.out.println("参数正常");
-	//
-	// // 第二步 判断有无欠费
-	// EWalletLogExample walletLogExample = new EWalletLogExample();
-	// EWalletLogExample.Criteria walletLogcriteria =
-	// walletLogExample.createCriteria();
-	// walletLogcriteria.andUserIdEqualTo(userId);
-	// walletLogcriteria.andLogTypeEqualTo(EWalletLog.BILL_DEBT);
-	// walletLogcriteria.andTransactionIdIsNull();
-	//
-	// Map<String, Object> map = walletLogService.list(walletLogExample, 0, 0);
-	//
-	// if ((int) map.get("total") != 0) {
-	// List<EWalletLog> list = (List<EWalletLog>) map.get("data");
-	//
-	// double total = 0;
-	// for (EWalletLog eWalletLog : list) {
-	//
-	// total += eWalletLog.getMoney().doubleValue();
-	//
-	// }
-	// res.put("message", "由于您上次未及时归还设备，欠费" + total + "元，请支付后重试");
-	// res.put("money", total);
-	// res.put("status", 212);
-	// return res;
-	//
-	// }
-	//
-	// // 第二步 判断重复领取
-	// if (null != device.getUserId() && userId.equals(device.getUserId())) {
-	// System.out.println();
-	// res.put("message", "您已绑定该设备，无须重复");
-	// res.put("status", 210);
-	// return res;
-	// }
-	// System.out.println("没有重复领取");
-	//
-	// // 第二步检查用用户身份
-	// if (null != wallet.getRole() && wallet.getRole() == EUser.CHARGEMAN) {
-	//
-	// System.out.println("我是充电侠");
-	//
-	// // 这里直接调回收函数
-	// RentDevice(device.getId(), userId);
-	// res.put("device", device);
-	// res.put("status", 200);
-	// res.put("message", "取回成功");
-	// return res;
-	// }
-	//
-	// System.out.println("我是普通用户");
-	//
-	// // 第三步判断押金
-	// if (null != wallet.getRole() && wallet.getRole() == EWallet.NORMAL) {
-	//
-	// List<EDevice> deviceList = new ArrayList<EDevice>();
-	// deviceList.add(device);
-	//
-	// EDeviceExample example = new EDeviceExample();
-	// EDeviceExample.Criteria criteria = example.createCriteria();
-	// criteria.andUserIdEqualTo(userId);
-	//
-	// deviceList.addAll((List<EDevice>) deviceService.list(example, 0,
-	// 0).get("data"));
-	// double totalShareMoney = 0;
-	//
-	// for (EDevice eDevice : deviceList) {
-	// totalShareMoney += eDevice.getShareMoney().doubleValue();
-	// }
-	//
-	// if (wallet.getShareAmount().compareTo(new BigDecimal(totalShareMoney)) ==
-	// -1) {
-	// res.put("money", TextUtils.formatDouble((totalShareMoney -
-	// wallet.getShareAmount().doubleValue())));
-	// res.put("status", 213);
-	// res.put("device", device);
-	// res.put("message", "共享金额不足，请充值共享金");
-	// return res;
-	// }
-	//
-	// }
-	//
-	// // 第三步检查有无可换电的订单
-	//
-	// EOrders order = new EOrders();
-	// order.setDeviceName(device.getName());
-	// order.setUserId(userId);
-	// List<EOrders> orderList = orderService.getChangeList(order);
-	//
-	// if (null != orderList && orderList.size() > 0) {
-	// System.out.println("我有换电资格");
-	// return changeDevice(device.getId(), userId);
-	// }
-	//
-	// System.out.println("我没有的换电资格");
-	//
-	// // 检查设备类型
-	// String sourceStr = device.getFunction();
-	// String[] functionList = sourceStr.split(",");
-	//
-	// for (String string : functionList) {
-	// System.out.println("功能列表： " + string);
-	// }
-	//
-	// System.out.println("列表长度: " + functionList.length);
-	//
-	// if (functionList.length == 1 &&
-	// functionList[0].equals(EScaneLog.RECIVE_DEVICE.toString())) {
-	// // 调用领取逻辑
-	// System.out.println("这个设备只能租所以省事了");
-	// res.put("message", "领取成功了");
-	// return RentDevice(device.getId(), userId);
-	// }
-	//
-	// System.out.println("拉取功能列表");
-	// res.put("function", functionList);
-	// res.put("device", device);
-	// res.put("status", 201);
-	// res.put("message", "拉取功能列表");
-	// return res;
-	// }
+
 
 	/**
 	 * 充电侠和管理员扫码的区别仅在于 库管在扫码后要设置owner,根据需要变更设备状态。
@@ -288,6 +130,7 @@ public class DeviceController {
 
 			// 第一步 用户参数校验
 			EDevice device = deviceService.get(deviceId);
+			EUser user = userService.get(userId);
 
 			if (device == null) {
 				res.put("message", "设备编号错误");
@@ -295,7 +138,6 @@ public class DeviceController {
 				return res;
 			}
 
-			EUser user = userService.get(userId);
 			if (null == user) {
 				res.put("status", 210);
 				res.put("message", "查找失败，用户错误");
@@ -308,11 +150,7 @@ public class DeviceController {
 				return res;
 			}
 
-			if (device.getState() == EDevice.DEVICE_NULL && user.getRole() == EUser.CHARGEMAN) {
-				res.put("status", 210);
-				res.put("message", "设备未入库");
-				return res;
-			}
+		
 
 			boolean flag = true;
 
@@ -328,23 +166,9 @@ public class DeviceController {
 
 			}
 
-			if (flag)
-				device.setState(EDevice.ELECTRIC_LESS);
-
-			if (device.getState() == EDevice.DEVICE_NULL && user.getRole() == EUser.MANAGER) {
-				device.setState(EDevice.ELECTRIC_LESS);
-
-			}
 			// 第二步 领回设备
-
 			device.setUserId(userId);
 			device.setManager(userId);
-
-			if (device.getOwner() == null && user.getRole() == EUser.MANAGER) {
-				device.setOwner(userId);
-
-			}
-
 			deviceService.edit(device);
 
 			// 第三步 插入扫码日志
@@ -376,7 +200,8 @@ public class DeviceController {
 	@RequestMapping(value = "/RentDevice", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Object> RentDevice(@RequestParam(required = true) String deviceId,
-			@RequestParam(required = true) String userId) {
+			@RequestParam(required = true) String userId,
+			@RequestParam(defaultValue = "1") int count) {
 		Map<String, Object> res = new HashMap<String, Object>();
 
 		try {
@@ -397,18 +222,44 @@ public class DeviceController {
 				res.put("message", "设备未入库");
 				return res;
 			}
+			res.put("device", device);
+			
+			
+			// 第二步判断押金
+			if (null != wallet.getRole() && user.getRole() == EWallet.NORMAL) {
+				System.out.println("开始判断押金");
 
-			// if(device.getState()==EDevice.ELECTRIC_LESS){
-			// res.put("status", 210);
-			// res.put("message", "设备电量不足");
-			// return res;
-			// }
-			// if(device.getState()==EDevice.IN_CHARGEING){
-			// res.put("status", 210);
-			// res.put("message", "设备充电中");
-			// return res;
-			// }
+				List<EDevice> deviceList = new ArrayList<EDevice>();
+				deviceList.add(device);
 
+				EDeviceExample example = new EDeviceExample();
+				EDeviceExample.Criteria criteria = example.createCriteria();
+				criteria.andUserIdEqualTo(userId);
+
+				deviceList.addAll((List<EDevice>) deviceService.list(example, 0, 0).get("data"));
+				double totalShareMoney = 0;
+
+				
+				for (EDevice eDevice : deviceList) {
+					totalShareMoney += eDevice.getShareMoney().doubleValue();
+				}
+                  System.out.println("totalShareMoney:"+totalShareMoney);
+				
+                  
+                  
+				System.out.println("myshareMoney: "+wallet.getShareAmount().doubleValue());
+								
+				if (wallet.getShareAmount().doubleValue()<totalShareMoney ) {
+					res.put("money", TextUtils.formatDouble((totalShareMoney - wallet.getShareAmount().doubleValue())));
+					res.put("reminShare", wallet.getShareAmount().doubleValue()-(totalShareMoney-device.getShareMoney().doubleValue()));
+					res.put("status", 213);
+					res.put("message", "共享金额不足，请充值共享金");
+					return res;
+				}
+				
+			}
+			
+			
 			// 第三步 判断余额
 			if (null != wallet.getRole() && wallet.getRole() != EUser.CHARGEMAN) {
 
@@ -422,18 +273,18 @@ public class DeviceController {
 
 				if (user.getRole() != EUser.CHARGEMAN && wallet.getAmount() < minCoast) {
 					res.put("status", 211);
-					res.put("device", device);
+			
 					res.put("pages", "rental");
 					res.put("message", "您的余额少于设备的，最小租金。请在我的——>我的钱包,充值后使用");
 					return res;
 				}
 			}
-
+			
 			// 第三步 判断有否有上一用户
 			if (device.getUserId() == null || device.getUserId().equals("")) {
-				deviceService.RentalDevice(device, userId);
+				deviceService.RentalDevice(device, userId, count);
 				res.put("status", 200);
-				res.put("device", device);
+
 				res.put("message", "领取成功");
 				return res;
 			}
@@ -442,11 +293,10 @@ public class DeviceController {
 			deviceService.endUse(device);
 
 			// 第四步 成功返回
-			deviceService.RentalDevice(device, userId);
+			deviceService.RentalDevice(device, userId, count);
 
 			// 函数结束成功返回
 			res.put("status", 200);
-			res.put("device", device);
 			res.put("message", "绑定成功");
 			return res;
 
@@ -470,26 +320,10 @@ public class DeviceController {
 		EDevice device = deviceService.get(deviceId);
 
 		if (device.getState() == EDevice.DEVICE_BAD || device.getState() == EDevice.DEVICE_REPAIR) {
+			
+			
 			res.put("status", 210);
 			res.put("message", "设备故障");
-			return res;
-		}
-
-		if (device.getState() == EDevice.DEVICE_NULL) {
-			res.put("status", 210);
-			res.put("message", "设备未入库");
-			return res;
-		}
-
-		if (device.getState() == EDevice.IN_CHARGEING) {
-			res.put("status", 210);
-			res.put("message", "设备充电中");
-			return res;
-		}
-
-		if (device.getState() == EDevice.ELECTRIC_LESS) {
-			res.put("status", 210);
-			res.put("message", "设备电量不足");
 			return res;
 		}
 
@@ -512,6 +346,13 @@ public class DeviceController {
 		order.setDeviceName(device.getName());
 		order.setUserId(userId);
 		List<EOrders> orderList = orderService.getChangeList(order);
+		
+		if(orderList==null || orderList.size()==0) {
+			res.put("message", "您没有换电订单");
+			res.put("status", 210);
+			return res;
+		}
+			
 		EOrders orders = orderList.get(0);
 		orders.setDeviceId(deviceId);
 		orderService.edit(orders);
@@ -537,7 +378,7 @@ public class DeviceController {
 
 		return res;
 	}
-
+	
 	// 获取设备详情
 	@RequestMapping(value = "/getDeviceDetail", method = RequestMethod.GET)
 	@ResponseBody
@@ -571,6 +412,10 @@ public class DeviceController {
 
 	}
 
+	/***
+	 * 1.扫码后拉取用户类型 2.拉取设备操作 3.返回设备描述 4.返回钱包
+	 * 
+	 **/
 	@RequestMapping(value = "/scaneCode", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Object> scaneCode(@RequestParam(required = true) String deviceNo,
@@ -579,20 +424,6 @@ public class DeviceController {
 		try {
 
 			// 第一步检查参数
-
-			EDevice device = deviceService.getByDeviceNo(deviceNo);
-			if (device == null) {
-				res.put("message", "设备编号错误");
-				res.put("status", 210);
-				return res;
-			}
-
-			if (device.getState() == EDevice.DEVICE_BAD) {
-				res.put("message", "设备故障");
-				res.put("status", 210);
-				return res;
-			}
-
 			EUser user = userService.get(userId);
 			if (null == user) {
 				res.put("status", 210);
@@ -600,169 +431,39 @@ public class DeviceController {
 				return res;
 			}
 
-			EWallet wallet = walletService.getWalletByUser(userId);
+			EDevice device = deviceService.getByDeviceNo(deviceNo);
 
-			if (wallet == null) {
-				wallet = new EWallet();
-				wallet.setAmount(500);
-				wallet.setId(TextUtils.getIdByUUID());
-				wallet.setShareAmount(new BigDecimal(0));
-				wallet.setUserId(userId);
-				wallet.setRole(EWallet.NORMAL);
-				walletService.insert(wallet);
-			}
-
-			res.put("device", device);
-			res.put("wallet", wallet);
-
-			System.out.println("参数正常");
-
-			// 第二步 判断重复绑定
-			if (null != device.getUserId() && userId.equals(device.getUserId())
-					&& device.getState() != EDevice.DEVICE_NULL) {
-
-				// 库管二次扫码
-				if (user.getRole() == EUser.MANAGER) {
-					res.put("message", "是否报废设备？");
-					res.put("status", 209);
-					return res;
-				}
-
-				// 充电侠二次扫码
-
-				// if(user.getRole()==EUser.CHARGEMAN){
-				//
-				// if(device.getState()==EDevice.ELECTRIC_LESS){
-				// res.put("message", "给设备充电？");
-				// res.put("status", 220);
-				// return res;
-				// }
-				//
-				// if(device.getState()==EDevice.IN_CHARGEING){
-				// res.put("message", "充电完成了？");
-				// res.put("status", 221);
-				// return res;
-				// }
-				//
-				// }
-
-				res.put("message", "您已领取设备");
-				res.put("status", 206);
+			if (device == null) {
+				res.put("message", "设备编号错误");
+				res.put("status", 210);
 				return res;
-
 			}
-
+			res.put("device", device);
+			
 			// 第三步 充电侠识别
 			if (null != user.getRole() && user.getRole() == EUser.CHARGEMAN) {
-
-				res.put("status", 203);
-				res.put("message", "取回设备");
+				
+				res.put("isChargeMan", "yes");
+				res.put("status", 200);
+				res.put("message", "查找成功");
 				return res;
 			}
-
-			// 第四步 库管识别
-			if (null != user.getRole() && user.getRole() == EUser.MANAGER) {
-
-				res.put("status", 203);
-				res.put("message", "设备入库");
+			
+			if (device.getState() == EDevice.DEVICE_BAD) {
+				res.put("message", "设备故障");
+				res.put("status", 210);
 				return res;
 			}
+			
+			EWallet wallet = walletService.getWalletByUser(userId);
+			res.put("wallet", wallet);
+	
+			res.put("isChargeMan", "no");
 
-			// 第五步 集团主管识别
-			if (null != user.getRole() && user.getRole() == EUser.CORPORATE_MANAGER) {
-				res.put("status", 204);
-				res.put("message", "员工管理");
-				return res;
-			}
+			res.put("status", 200);
+			res.put("message", "查找成功");
 
-			// 第六步 检查用户类型
-			if (null != user.getRole() && user.getRole() == EUser.CORPORATE) {
-				res.put("status", 202);
-				res.put("message", "换电: " + device.getChangeDdb() + "嘀嘀币");
-				return res;
-			}
-
-			// 第七步 普通用户首先判断押金、再判断欠款、再判断换电资格
-
-			// 判断押金
-			if (null == user.getRole() || user.getRole() == EWallet.NORMAL) {
-
-				List<EDevice> deviceList = new ArrayList<EDevice>();
-
-				EDeviceExample example = new EDeviceExample();
-				EDeviceExample.Criteria criteria = example.createCriteria();
-				criteria.andUserIdEqualTo(userId);
-
-				deviceList.addAll((List<EDevice>) deviceService.list(example, 0, 0).get("data"));
-
-				// 原有不可动押金
-				double totalShareMoney = 0;
-
-				for (EDevice eDevice : deviceList) {
-					totalShareMoney += eDevice.getShareMoney().doubleValue();
-				}
-
-				// 可动押金
-				double reminShare = wallet.getShareAmount().doubleValue() - totalShareMoney;
-
-				double money = device.getShareMoney().doubleValue() - reminShare;
-
-				totalShareMoney = 0;
-				deviceList.add(device);
-				for (EDevice eDevice : deviceList) {
-					totalShareMoney += eDevice.getShareMoney().doubleValue();
-				}
-
-				if (money > 0) {
-					res.put("money", TextUtils.formatDouble((totalShareMoney - wallet.getShareAmount().doubleValue())));
-					res.put("reminShare", reminShare);
-					res.put("status", 213);
-					res.put("device", device);
-					res.put("message", "共享金额不足，请充值共享金");
-					return res;
-
-				}
-
-			}
-
-			// 判断的换电资格
-			EOrders order = new EOrders();
-			order.setDeviceName(device.getName());
-			order.setUserId(userId);
-			List<EOrders> orderList = orderService.getChangeList(order);
-
-			deviceService.checkChange(user, device.getName());
-
-			if (null != orderList && orderList.size() > 0) {
-				System.out.println("有换电资格");
-				res.put("message", "换电: " + device.getChangeDdb() + "嘀嘀币");
-				res.put("status", 202);
-				return res;
-
-			} else {
-
-				System.out.println("木有换电资格");
-
-				int rental = 0;
-				String rentalType = "";
-				if (device.getRentalType() == EDevice.RENTAL_BY_HOUR) {
-					rental = device.getRentalH();
-					rentalType = "小时";
-				}
-				if (device.getRentalType() == EDevice.RENTAL_BY_DAY) {
-					rental = device.getRental();
-					rentalType = "天";
-				}
-				if (device.getRentalType() == EDevice.RENTAL_BY_MONTH) {
-					rental = device.getRentalM();
-					rentalType = "月";
-				}
-
-				res.put("message", "租电: " + rental + "嘀嘀币/" + rentalType);
-				res.put("status", 201);
-				return res;
-			}
-
+			return res;
 		} catch (Exception e) {
 			e.printStackTrace();
 			res.put("status", 210);
@@ -794,7 +495,7 @@ public class DeviceController {
 		}
 
 		if (user.getRole() != EUser.CHARGEMAN || user.getRole() == EUser.MANAGER) {
-			res.put("message", "权限不足");
+			res.put("message", "您不是充电侠，不能给设备充电");
 			res.put("status", 210);
 			return res;
 		}
@@ -807,45 +508,20 @@ public class DeviceController {
 			return res;
 		}
 
-		EDevice adapt = deviceService.getByDeviceNo(adaptCode);
-		if (adapt == null) {
-			res.put("message", "充电器无效");
-			res.put("status", 210);
-			return res;
-		}
-
-		if (adapt.getType() != (device.getType() + 3)) {
-			res.put("message", "充电器不区配");
-			res.put("status", 210);
-			return res;
-		}
-
-		if (adapt.getState() == EDevice.IN_BUSY) {
-			res.put("message", "充电器不能同时充两个设备");
-			res.put("status", 210);
-			return res;
-		}
-
-		adapt.setState(EDevice.IN_BUSY);
-		deviceService.edit(adapt);
-
 		// 变更电池状态
-		device.setState(EDevice.IN_CHARGEING);
+		device.setState(EDevice.ELECTRIC_ENOUGH);
 		deviceService.edit(device);
 
+		//记录日志
 		EScaneLog scaneLog = new EScaneLog();
 		scaneLog.setId(TextUtils.getIdByUUID());
 		scaneLog.setStartDate(new Date());
 		scaneLog.setEndDate(new Date());
 		scaneLog.setUserId(userId);
 		scaneLog.setDeviceId(device.getId());
-		scaneLog.setCompanion(adapt.getId());
 		scaneLog.setOpration(EScaneLog.CHARGE_DEVICE);
-
 		scaneLog.setManager(device.getManager());
 		scaneLogService.insert(scaneLog);
-
-		// ddbService.insert(userId, device.getChargeDdb(), EDdb.CHAREGE);
 
 		res.put("message", "开始充电了");
 		res.put("status", 200);
@@ -853,75 +529,9 @@ public class DeviceController {
 
 	}
 
-	@RequestMapping(value = "/chargeFinish", method = RequestMethod.GET)
-	@ResponseBody
-	public Map<String, Object> chargeFinish(@RequestParam(required = true) String deviceId,
-			@RequestParam(required = true) String userId) {
-		Map<String, Object> res = new HashMap<String, Object>();
-
-		EDevice device = deviceService.get(deviceId);
-		EUser user = userService.get(userId);
-
-		if (device == null) {
-			res.put("message", "设备编号错误");
-			res.put("status", 210);
-			return res;
-		}
-
-		if (device.getState() != device.IN_CHARGEING) {
-			res.put("message", "状态异常");
-			res.put("status", 210);
-			return res;
-		}
-
-		if (user.getRole() != EUser.CHARGEMAN || user.getRole() == EUser.MANAGER) {
-			res.put("message", "权限不足");
-			res.put("status", 210);
-			return res;
-		}
-
-		EScaneLogExample scaneLogExample = new EScaneLogExample();
-		EScaneLogExample.Criteria scaneLogCriteria = scaneLogExample.createCriteria();
-		// scaneLogCriteria.andUserIdEqualTo(userId);
-		scaneLogCriteria.andDeviceIdEqualTo(deviceId);
-		scaneLogCriteria.andOprationEqualTo(EScaneLog.CHARGE_DEVICE);
-		scaneLogExample.setOrderByClause("start_date desc");
-
-		List<EScaneLog> list = (List<EScaneLog>) scaneLogService.list(scaneLogExample, 0, 0).get("data");
-
-		if (list != null && list.size() != 0) {
-
-			EScaneLog scaneLog = list.get(0);
-			EDevice adapt = deviceService.get(scaneLog.getCompanion());
-			adapt.setState(EDevice.IN_READY);
-			deviceService.edit(adapt);
-		}
-
-		// 变更电池状态
-		device.setState(EDevice.ELECTRIC_ENOUGH);
-		deviceService.edit(device);
-
-		EScaneLog scaneLog = new EScaneLog();
-		scaneLog.setId(TextUtils.getIdByUUID());
-		scaneLog.setStartDate(new Date());
-		scaneLog.setEndDate(new Date());
-		scaneLog.setUserId(userId);
-		scaneLog.setDeviceId(device.getId());
-		scaneLog.setOpration(EScaneLog.CHARGING_FINISH);
-		scaneLog.setManager(device.getManager());
-		scaneLogService.insert(scaneLog);
-
-		ddbService.insert(userId, device.getChargeDdb(), EDdb.CHAREGE);
-
-		res.put("message", "充电成功了");
-		res.put("status", 200);
-		return res;
-
-	}
-
+	
 	/**
-	 * 充电侠将电池报修，交由库管确认状态。
-	 * 
+	 * 设备报修
 	 */
 	@RequestMapping(value = "/repairDevice", method = RequestMethod.GET)
 	@ResponseBody
@@ -948,11 +558,71 @@ public class DeviceController {
 		scaneLogService.insert(scaneLog);
 		return res;
 	}
+	
+	
+	/**
+	 * 设备报修
+	 */
+	@RequestMapping(value = "/startService", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> startService(@RequestParam(required = true) String deviceId,
+			@RequestParam(required = true) String userId) {
+		Map<String, Object> res = new HashMap<String, Object>();
 
+		
+		//第一步 参数校验
+		EDevice device = deviceService.get(deviceId);
+
+		if (device == null) {
+			res.put("message", "设备编号错误");
+			res.put("status", 210);
+			return res;
+		}
+		
+		if (device.getState() == EDevice.DEVICE_BAD) {
+			res.put("message", "设备故障");
+			res.put("status", 210);
+			return res;
+		}
+
+		EUser user = userService.get(userId);
+		if (null == user) {
+			res.put("status", 210);
+			res.put("message", "查找失败，用户错误");
+			return res;
+		}
+
+		EWallet wallet = walletService.getWalletByUser(userId);
+
+	 //第二步 判断余额
+		if (wallet.getAmount() < device.getChangeDdb()) {
+			res.put("message", "余额不足");
+			res.put("device", device);
+			res.put("status", 211);
+			return res;
+		} else {
+			wallet.setAmount(wallet.getAmount() - device.getChangeDdb());
+			walletService.edit(wallet);
+		}
+
+		EScaneLog scaneLog = new EScaneLog();
+		scaneLog.setStartDate(new Date());
+		scaneLog.setUserId(userId);
+		scaneLog.setDeviceId(device.getId());
+		scaneLog.setOpration(EScaneLog.START_SERVICE);
+		scaneLog.setManager(device.getManager());
+		scaneLogService.insert(scaneLog);
+		
+		res.put("status", 200);
+		res.put("message", "搭电付费成功了");
+		
+		return res;
+	}
+	
+	
 	/**
 	 * 库管将电池报废
 	 */
-
 	@RequestMapping(value = "/destroyDevice", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Object> destroyDevice(@RequestParam(required = true) String deviceId,
@@ -964,16 +634,21 @@ public class DeviceController {
 
 		EUser user = userService.get(userId);
 
-		if (user.getRole() != EUser.MANAGER) {
+		if (user.getRole() != EUser.CHARGEMAN) {
 			res.put("message", "权限不足");
 			res.put("status", 210);
 			return res;
 		}
+		
+		if (device == null) {
+			res.put("message", "设备编号错误");
+			res.put("status", 210);
+			return res;
+		}
 
-		device.setState(EDevice.DEVICE_NULL);
-
+		device.setState(EDevice.DEVICE_BAD);
 		deviceService.edit(device);
-
+		
 		EScaneLog scaneLog = new EScaneLog();
 		scaneLog.setId(TextUtils.getIdByUUID());
 		scaneLog.setStartDate(new Date());
@@ -984,53 +659,16 @@ public class DeviceController {
 		scaneLogService.insert(scaneLog);
 
 		// 作废订单
-		EOrdersExample orderExample = new EOrdersExample();
-		EOrdersExample.Criteria orderCriteria = orderExample.createCriteria();
-		orderCriteria.andUserIdEqualTo(userId);
-		orderCriteria.andDeviceIdEqualTo(device.getId());
-		orderExample.setOrderByClause("end_date desc");
-
-		List<EOrders> orderList = (List<EOrders>) orderService.list(orderExample, 0, 0).get("data");
-
-		for (EOrders eOrders : orderList) {
-
-			orderService.delete(eOrders.getId());
-		}
-
 		device.setUserId(null);
 		device.setManager(null);
 		device.setOwner(null);
 		deviceService.edit(device);
 
-		return res;
-	}
-
-	/**
-	 * 库管确认电池没有问题
-	 */
-	@RequestMapping(value = "/normalDevice", method = RequestMethod.GET)
-	@ResponseBody
-	public Map<String, Object> normalDevice(@RequestParam(required = true) String deviceId,
-			@RequestParam(required = true) String userId) {
-		Map<String, Object> res = new HashMap<String, Object>();
-
-		EDevice device = deviceService.get(deviceId);
-		EUser user = userService.get(userId);
-
-		if (user.getRole() != EUser.CHARGEMAN) {
-			res.put("message", "权限不足");
-			res.put("status", 210);
-			return res;
-		}
-
-		device.setState(EDevice.ELECTRIC_LESS);
-		EScaneLog scaneLog = new EScaneLog();
-		scaneLog.setStartDate(new Date());
-		scaneLog.setUserId(userId);
-		scaneLog.setDeviceId(device.getId());
-		scaneLog.setOpration(EScaneLog.NORMAL_DEVICE);
-		scaneLog.setManager(device.getManager());
-		scaneLogService.insert(scaneLog);
+		res.put("status", 200);
+		res.put("message", "报废成功了");	
+		
+		
+		
 		return res;
 	}
 
@@ -1041,7 +679,7 @@ public class DeviceController {
 		long h = 60; // 小时
 
 		long diff = (date.getTime() - new Date().getTime()) / 1000 / 60; // 得到时间差
-																			// 单位分钟
+																			
 		String prx = "";
 		if (diff < 0) {
 			prx = "超期";
@@ -1053,9 +691,12 @@ public class DeviceController {
 			return prx + diff + "分钟";
 		if (diff < d)
 			return prx + diff / h + "小时";
-
+	
 		return prx + diff / d + "天";
-
 	}
+	
+	
+	
+
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.didi.model.EDevice;
 import com.didi.model.EOrders;
+import com.didi.model.EOrdersExample;
 import com.didi.model.EUser;
 import com.didi.model.EWallet;
 import com.didi.pay.model.PayInfo;
@@ -200,6 +201,38 @@ public class OrderController {
 
 	}
 
+	@RequestMapping(value = "/getMyOrders", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getMyOrders(String userId) {
+
+		Map<String, Object> res = new HashMap<String, Object>();
+		
+		try {
+			
+			EOrdersExample example=new EOrdersExample();
+			EOrdersExample.Criteria criteria=example.createCriteria();
+			criteria.andUserIdEqualTo(userId);
+			example.setOrderByClause("end_date DESC;");
+			List<EOrders> list=(List<EOrders>) orderService.list(example, 0, 0).get("data");
+			
+			res.put("list", list);
+			res.put("status", 200);
+			res.put("message", "查找成功了");
+			return res;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			res.put("status", 210);
+			res.put("message", "领取失败!原因：" + e.getMessage());
+			return res;
+
+		}
+
+	}
+	
+	
+	
+	
 	// 获取
 	@RequestMapping(value = "/getDayOrder", method = RequestMethod.GET)
 	@ResponseBody
