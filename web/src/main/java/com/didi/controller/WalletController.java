@@ -305,7 +305,131 @@ public class WalletController {
 			return res;
 		}
 	}
+	
+	
+	
+	// 退共享金
+		@RequestMapping(value = "/amountToCashApply", method = RequestMethod.GET)
+		@ResponseBody
+		public Map<String, Object> amountToMoney(@RequestParam(required = true) String userId,
+				@RequestParam(defaultValue="100") int amount) {
 
+			Logger logg = Logger.getLogger("spring");
+
+			Map<String, Object> res = new HashMap<String, Object>();
+			try {
+				// 检查参数合法性
+				if (userId == null || userId.equals("")) {
+					res.put("status", 210);
+					res.put("message", "参数不能为空!");
+					return res;
+				}
+				
+				EUser user = userService.get(userId);
+				
+				if (user == null) {
+					res.put("status", 210);
+					res.put("message", "用户不存在");
+					return res;
+				}
+				
+				if(user.getRole()!=EUser.CHARGEMAN) {
+					res.put("status", 210);
+					res.put("message", "权限不足");
+					return res;	
+				}
+
+				EWallet wallet = walletService.getWalletByUser(userId);
+
+				if (wallet.getAmount()<100 || wallet.getAmount()<amount) {
+					res.put("status", 210);
+					res.put("message", "嘀嘀币不足");
+					return res;
+				}
+
+				
+				
+				String openId = user.getWechatId();
+
+
+				logg.info("余额充足可以退款: " + userId);
+
+				String Partner_trade_no = TextUtils.getIdByUUID();
+				ComRefundMsg msg = new ComRefundMsg();
+
+				msg.setMch_appid(Constant.APPID);
+
+				msg.setMchid(Constant.MCHID);
+				msg.setNonce_str(WeixinUtil.getRandomString(32).toLowerCase());
+				msg.setOpenid(openId);
+				msg.setPartner_trade_no(Partner_trade_no);
+
+				msg.setAmount(amount);
+
+				msg.setDesc("returnShareMoney");
+				msg.setCheck_name("NO_CHECK");
+				msg.setSpbill_create_ip("172.16.1.145");
+				String sign = WeixinUtil.getComRefundSign(msg);
+				msg.setSign(sign);
+
+				String refundRet = HttpclientUtil.postWithXML(Constant.COM_REFUND_URL, msg.getXml());
+
+				System.out.println(msg.getXml());
+
+				String refundReturnCode = StringUtils.substringBetween(refundRet.trim(), "<return_code><![CDATA[",
+						"]]></return_code>");
+				String refundResultCode = StringUtils.substringBetween(refundRet.trim(), "<result_code><![CDATA[",
+						"]]></result_code>");
+
+				String err_code = StringUtils.substringBetween(refundRet.trim(), "<err_code><![CDATA[", "]]></err_code>");
+
+				String return_msg = StringUtils.substringBetween(refundRet.trim(), "<return_msg><![CDATA[",
+						"]]></return_msg>");
+
+				logg.info("refundReturnCode: " + refundReturnCode);
+				logg.info("refundResultCode: " + refundResultCode);
+				logg.info("err_code: " + err_code);
+				logg.info("return_msg: " + return_msg);
+
+				EWalletLog log = new EWalletLog();
+				log.setId(Partner_trade_no);
+				log.setLogDate(new Date());
+		
+				log.setLogType(EWalletLog.BILL_REFUND_DDB);
+
+				log.setMoney( BigDecimal.valueOf(amount/100.0));
+
+				log.setUserId(userId.toString());
+
+				walletLogService.insert(log);
+				// 写日志
+				if (refundResultCode != null && refundResultCode.equalsIgnoreCase("SUCCESS") && refundReturnCode != null
+						&& refundReturnCode.equalsIgnoreCase("SUCCESS")) {
+
+					wallet.setAmount(wallet.getAmount()-amount);
+					walletService.edit(wallet);
+					log.setTransactionId("ok");
+					walletLogService.edit(log);
+
+					// 结束所有未用订单
+					
+					res.put("status", 200);
+					res.put("message", "提现成功了!");
+					return res;
+				} else {
+					res.put("status", 210);
+					res.put("message", "退款操作异常！");
+					res.put("refundReply", refundRet);
+					return res;
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				res.put("status", 210);
+				res.put("message", "共享金退款失败!错误原因：" + e.getMessage());
+				return res;
+			}
+		}
 	@RequestMapping(value = "/getWalletLogByUserId", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Object> getWalletLogByUserId(@RequestParam(defaultValue = "1") int page,
@@ -365,5 +489,8 @@ public class WalletController {
 			return res;
 		}
 	}
+	
+	
+	
 
 }

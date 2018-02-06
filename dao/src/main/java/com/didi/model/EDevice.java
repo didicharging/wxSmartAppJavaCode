@@ -10,8 +10,10 @@ public class EDevice {
 	public static Integer RENTAL_BY_DAY=2;
 	public static Integer RENTAL_BY_MONTH=3;
 	
-	public static Integer ELECTRIC_LESS=1;
+	public static Integer ELECTRIC_LESS=1;	
 	public static Integer ELECTRIC_ENOUGH=2;
+	
+
 	public static Integer IN_CHARGEING=3;
 	public static Integer DEVICE_BAD=99;
 	public static Integer DEVICE_REPAIR=98;

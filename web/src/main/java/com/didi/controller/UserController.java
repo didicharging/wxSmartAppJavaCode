@@ -53,9 +53,32 @@ public class UserController {
 		}
 		return res;
 	}
+	
+	@RequestMapping(value = "/getChargeManList", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getChargeManList() {
+		Map<String, Object> res = new HashMap<String, Object>();
+		try {
+			EUser user = new EUser();
+			user.setRole(EUser.CHARGEMAN); 
+	
+			res.put("status", 200);
+			res.put("message", "查找成功!");
+			res.put("result", userService.list(user, 0, 0).get("data"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			res.put("status", 210);
+			res.put("message", "查找失败!");
+		}
+		return res;
+	}
+
+	
+	
+	
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	   @ResponseBody
+	@ResponseBody
 	public Map<String, Object> list(@RequestParam(defaultValue = "1") int page,
 			@RequestParam(defaultValue = "10") int perPage,
 			@RequestParam(required = false) String wechatId,

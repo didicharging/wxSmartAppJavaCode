@@ -110,7 +110,7 @@
 				<filtering>false</filtering>
 			</resource>
 			<resource>
-				<directory>src/main/resources</directory>
+				<directory>src/main/resource</directory>
 
 				<includes>
 					<include>**/*.properties</include>
@@ -118,7 +118,7 @@
 			
 				</includes>
 
-				<filtering>true</filtering>
+			 	<filtering>false</filtering> 
 
 			</resource>
 		</resources> 

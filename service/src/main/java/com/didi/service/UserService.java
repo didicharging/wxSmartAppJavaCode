@@ -127,6 +127,9 @@ public class UserService implements BaseCRUDService {
 			example.setLimit(perPage);
 			example.setOffset((page - 1) * perPage);
 		}
+		
+		if(user.getRole()!=null)
+			criteria.andRoleEqualTo(user.getRole());
 
 		if (user.getWechatId() != null)
 			criteria.andWechatIdEqualTo(user.getWechatId());
@@ -139,7 +142,9 @@ public class UserService implements BaseCRUDService {
 		}
 
 		List<EUser> list = mapper.selectByExample(example);
-
+         
+		
+		
 		result.put("data", list);
 		result.put("total", mapper.countByExample(example));
 		return result;

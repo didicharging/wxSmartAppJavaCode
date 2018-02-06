@@ -1,5 +1,6 @@
 package com.didi.service;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,12 +11,14 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.didi.mapper.EChatMapper;
 import com.didi.mapper.EDeviceMapper;
 import com.didi.mapper.EOrdersMapper;
 import com.didi.mapper.EScaneLogMapper;
 import com.didi.mapper.EUserMapper;
 import com.didi.mapper.EWalletLogMapper;
 import com.didi.mapper.EWalletMapper;
+import com.didi.model.EChat;
 import com.didi.model.EDdb;
 import com.didi.model.EDevice;
 import com.didi.model.EDeviceExample;
@@ -49,6 +52,9 @@ public class DeviceService {
 
 	@Resource
 	EUserMapper userMapper;
+	
+	@Resource
+	EChatMapper chatMapper;
 
 	@Resource
 	EWalletLogMapper walletLogMapper;
@@ -100,6 +106,24 @@ public class DeviceService {
 //	}
 	
 	
+	public Map<String, Object> MyInvestList(String userId, int page, int perPage) {
+		// TODO Auto-generated method stub
+		EDeviceExample example = new EDeviceExample();
+		if (page > 0 && perPage > 0) {
+			example.setLimit(perPage);
+			example.setOffset((page - 1) * perPage);
+		}
+		EDeviceExample.Criteria criteria = example.createCriteria();
+		criteria.andOwnerEqualTo(userId);
+		example.setOrderByClause("id");
+		List<EDevice> list = mapper.selectByExample(example);		
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("data", list);
+		result.put("total", mapper.countByExample(example));
+		return result;
+	
+}
+	
 
 	public int delete(String id) {
 		return 0;
@@ -127,7 +151,7 @@ public class DeviceService {
 		}
 		EDeviceExample.Criteria criteria = example.createCriteria();
 		criteria.andUserIdEqualTo(userId);
-		example.setOrderByClause("id");
+		example.setOrderByClause("update_time desc");
 		List<EDevice> list = mapper.selectByExample(example);
 		
 		Map<String, Object> result = new HashMap<String, Object>();
@@ -253,19 +277,19 @@ public class DeviceService {
 		int baseTime = 0;
 		
 		if (device.getRentalType() == EDevice.RENTAL_BY_HOUR) {
-			rental = device.getRentalH();
+			rental = device.getRentalH()*count;
 			calendar.add(Calendar.HOUR, count);
 			endTime = calendar.getTime();
 		}
 
 		if (device.getRentalType() == EDevice.RENTAL_BY_DAY) {
-			rental = device.getRental();
+			rental = device.getRental()*count;
 			calendar.add(Calendar.DATE, count);
 			endTime = calendar.getTime();
 		}
 
 		if (device.getRentalType() == EDevice.RENTAL_BY_MONTH) {
-			rental = device.getRentalM();
+			rental = device.getRentalM()*count;
 			calendar.add(Calendar.MONTH, count);
 			endTime = calendar.getTime();
 		}
@@ -288,6 +312,7 @@ public class DeviceService {
 		walletMapper.updateByPrimaryKey(wallet);
 		ddbService.insert(device.getUserId(), rental, EDdb.PAY_USE);
 		
+
 		// 第四步 生成新用户设备日志
 		EScaneLog scaneLog = new EScaneLog();
 		scaneLog.setId(TextUtils.getIdByUUID());
@@ -297,7 +322,57 @@ public class DeviceService {
 		scaneLog.setOpration(EScaneLog.RECIVE_DEVICE);
 		scaneLog.setManager(device.getManager());
 		scaneMapper.insert(scaneLog);
+		
+		
+		//第五步 计算分红 
+		int ownerGet=BigDecimal.valueOf(rental * device.getkW()).
+				setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+		
+		System.out.println("ownerGet: "+ownerGet);
+		
+		int managerGet= BigDecimal.valueOf(rental * device.getkM()).
+				setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+		System.out.println("managerGet: "+managerGet);
+		
+		int ddGet=BigDecimal.valueOf(rental * device.getkD()).
+				setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+		System.out.println("ddGet: "+ddGet);
+		
+		String owner=device.getOwner();
+		EWallet walletOwner=walletMapper.selectByUserId(owner);
+		walletOwner.setAmount(walletOwner.getAmount()+ownerGet);
 
+		ddbService.insert(owner,ownerGet , EDdb.OWNER);
+		walletMapper.updateByPrimaryKey(walletOwner);
+		
+		String manager=device.getManager();
+		EWallet walletManager=walletMapper.selectByUserId(manager);
+		walletManager.setAmount(walletManager.getAmount()+managerGet);	
+		
+		ddbService.insert(manager,managerGet , EDdb.MANAGER);
+		walletMapper.updateByPrimaryKey(walletManager);
+		
+		
+		String dd="ca2a1737154a4821a713a2cb431afd11";
+		EWallet walletDD=walletMapper.selectByUserId(dd);
+		walletDD.setAmount(walletDD.getAmount()+ddGet);	
+		
+		ddbService.insert(dd,ddGet , EDdb.DD);			
+		walletMapper.updateByPrimaryKey(walletDD);
+		
+		
+		EChat chat = new EChat();
+		chat.setChatDate(new Date());
+
+		chat.setContent(user.getName()+"/"+user.getNickName()+"租电成功了");
+		chat.setFromUser("7d248e45aafb4628aac7c39f56be6b6c");
+		chat.setToUser(device.getManager());
+		chat.setId(TextUtils.getIdByUUID());
+		chat.setIsDelete(0);
+		chat.setIsRead(0);		    
+
+		chatMapper.insert(chat);
+				
 		return 1;
 	}
 

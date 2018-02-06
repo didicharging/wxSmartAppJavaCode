@@ -188,7 +188,7 @@ public class OrderController {
 			} else {
 
 				res.put("message", "余额不足请充值后重试");
-				res.put("status", 211);
+				res.put("status", 210);
 				return res;
 			}
 

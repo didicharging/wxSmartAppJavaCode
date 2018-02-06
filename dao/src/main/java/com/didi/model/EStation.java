@@ -1,6 +1,5 @@
 package com.didi.model;
 
-
 public class EStation  implements Comparable<EStation>{
     private String id;
 
@@ -8,23 +7,21 @@ public class EStation  implements Comparable<EStation>{
 
     private String user;
 
-    @Override
-	public String toString() {
-		return "EStation [id=" + id + ", name=" + name + ", address=" + address + ", distance=" + distance + "]";
-	}
-
-	private Double longitude;
+    private Double longitude;
 
     private Double latitude;
 
     private String address;
 
     private String phone;
+
+    private String userId;
+
+    private String imgUrl;
     
     private int distance;
-    
-  
-	public int getDistance() {
+     
+    public int getDistance() {
 		return distance;
 	}
 
@@ -87,7 +84,22 @@ public class EStation  implements Comparable<EStation>{
     public void setPhone(String phone) {
         this.phone = phone == null ? null : phone.trim();
     }
-    
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId == null ? null : userId.trim();
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl == null ? null : imgUrl.trim();
+    }
     
     
 	@Override
@@ -97,10 +109,6 @@ public class EStation  implements Comparable<EStation>{
 
 	  return flag; 
 	 }  
-    
-    
-    
-    
-    
+
     
 }

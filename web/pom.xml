@@ -15,8 +15,6 @@
 	<name>web</name>
 	<url>http://maven.apache.org</url>
 
-
-
 	<dependencies>
 		<dependency>
 			<groupId>javax</groupId>
@@ -32,6 +30,8 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 		</dependency>
+		
+	
 
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>

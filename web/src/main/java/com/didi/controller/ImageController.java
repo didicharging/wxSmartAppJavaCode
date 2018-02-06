@@ -89,9 +89,6 @@ public class ImageController {
 				return res;
 			} 
 			
-
-			
-			
              catch (IOException | RuntimeException e) {
 				e.printStackTrace();
 				res.put("status", 210);

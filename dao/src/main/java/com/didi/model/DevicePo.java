@@ -4,24 +4,29 @@ import java.util.Date;
 
 public class DevicePo {
 
-	   String timeInfo;
-	   private String imgUrl;
-	   private String deviceNo;
-	   private String name;
-	   private Date updateTime;
-	    private String id;
-	   
-	    
-	   
+	String timeInfo;
+	private String imgUrl;
+	private String deviceNo;
+	private String name;
+	private Date updateTime;
+	private String id;
+	private int state;
 
+	public int getState() {
+		return state;
+	}
+
+	public void setState(int state) {
+		this.state = state;
+	}
 
 	public String getId() {
-			return id;
-		}
+		return id;
+	}
 
-		public void setId(String id) {
-			this.id = id;
-		}
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getImgUrl() {
 		return imgUrl;
@@ -62,6 +67,5 @@ public class DevicePo {
 	public void setTimeInfo(String timeInfo) {
 		this.timeInfo = timeInfo;
 	}
-
 
 }
