@@ -48,15 +48,12 @@ public class MapService  {
 					
 		while(it.hasNext()){
 			Map<String, Object> map = it.next();			
-			double longitude1 = (double) map.get("longitude");
-			double latitude1 = (double) map.get("latitude");
-			double distance=getDistance(longitude, latitude, longitude1, latitude1);			
-			if(distance<30000){
+	
 				  i++;			  
-				  if(i<=200){
+				  if(i<=500){
 					  sharelist.add(map);
 				  }
-			}		
+			
 		}
 		
 		}else{

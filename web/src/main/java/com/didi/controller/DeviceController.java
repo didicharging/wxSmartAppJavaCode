@@ -274,6 +274,10 @@ public class DeviceController {
 
 				List<EDevice> deviceList = new ArrayList<EDevice>();
 				deviceList.add(device);
+				
+				for (EDevice eDevice : deviceList) {
+					System.out.println(eDevice.getName()+ " "+ eDevice.getDeviceNo());
+				}
 
 				EDeviceExample example = new EDeviceExample();
 				EDeviceExample.Criteria criteria = example.createCriteria();
@@ -284,7 +288,9 @@ public class DeviceController {
 
 				for (EDevice eDevice : deviceList) {
 					totalShareMoney += eDevice.getShareMoney().doubleValue();
+					System.out.println(eDevice.getName()+ " "+ eDevice.getDeviceNo());
 				}
+				
 				System.out.println("totalShareMoney:" + totalShareMoney);
 
 				System.out.println("myshareMoney: " + wallet.getShareAmount().doubleValue());
@@ -390,6 +396,7 @@ public class DeviceController {
 			walletService.edit(wallet);
 		}
 
+		
 		// 第二步 找到对应的订单
 		EOrders order = new EOrders();
 		order.setDeviceName(device.getName());
@@ -421,7 +428,7 @@ public class DeviceController {
 		scaneLog.setOpration(EScaneLog.CHANGE_DEVICE);
 		scaneLog.setManager(device.getManager());
 		scaneLogService.insert(scaneLog);
-
+				
 		// 第五步 计算分红
 		int ownerGet = BigDecimal.valueOf(device.getChangeDdb() * device.getkW()).setScale(0, BigDecimal.ROUND_HALF_UP)
 				.intValue();
@@ -442,7 +449,6 @@ public class DeviceController {
 		walletOwner.setAmount(walletOwner.getAmount() + ownerGet);
 
 		ddbService.insert(owner, ownerGet, EDdb.OWNER);
-
 		walletService.edit(walletOwner);
 
 		String manager = device.getManager();
@@ -455,6 +461,7 @@ public class DeviceController {
 
 		String dd = "ca2a1737154a4821a713a2cb431afd11";
 		EWallet walletDD = walletService.get(dd);
+		
 		walletDD.setAmount(walletDD.getAmount() + ddGet);
 		ddbService.insert(dd, ddGet, EDdb.DD);
 		walletService.edit(walletDD);

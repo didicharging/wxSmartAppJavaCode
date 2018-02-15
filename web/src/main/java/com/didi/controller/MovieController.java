@@ -35,6 +35,8 @@ public class MovieController {
 		
 		try {
             
+			
+			
 			EMovieExample example=new EMovieExample();
 			
 			List<EMovie> list =(List<EMovie>) movieService.list(example, 0, 0).get("data");

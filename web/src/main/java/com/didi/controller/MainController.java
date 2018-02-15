@@ -161,7 +161,7 @@ public class MainController {
             	 String qrImgUrl=service.getQrImgUrl(user.getId());	
          		 user.setQrImg(qrImgUrl);
             	             	             	 
-    			 user.setRole(StateUtils.ROLE_USER);
+    			 user.setRole(EUser.NORMAL);
     			 
     		     user.setLastLoginTime(createTime);        	 
               

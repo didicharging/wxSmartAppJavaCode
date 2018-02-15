@@ -28,9 +28,8 @@ public class AppTest
 	MapMapper mapper;
 	
 	@Test
-	public void daoTest(){
-		
-			// TODO Auto-generated method stub
+	public void daoTest(){		
+		// TODO Auto-generated method stub
 		List<Map<String, Object>> list=mapper.getStationList();
 		System.out.println(list.size());
 		

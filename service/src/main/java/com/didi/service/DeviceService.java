@@ -105,7 +105,14 @@ public class DeviceService {
 //		}
 //	}
 	
+	public int investDevice(Map<String, Object> param) {
+		// TODO Auto-generated method stub	
+
+		return mapper.investDevice(param);
 	
+	}
+
+
 	public Map<String, Object> MyInvestList(String userId, int page, int perPage) {
 		// TODO Auto-generated method stub
 		EDeviceExample example = new EDeviceExample();

@@ -329,4 +329,6 @@ public class EDevice {
     public void setFunction(String function) {
         this.function = function == null ? null : function.trim();
     }
+    
+    
 }

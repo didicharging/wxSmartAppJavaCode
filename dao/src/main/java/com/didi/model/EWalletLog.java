@@ -15,6 +15,9 @@ public class EWalletLog {
 	public static final int BILL_REFUND_DDB= 3;
 	public static final int BILL_DEBT= 8;
 
+	public static final int BILL_INVEST=5;
+
+
 	public static final int	BUY_DEVICE=9;
 	
     private String id;

@@ -312,7 +312,7 @@ public class WalletController {
 		@RequestMapping(value = "/amountToCashApply", method = RequestMethod.GET)
 		@ResponseBody
 		public Map<String, Object> amountToMoney(@RequestParam(required = true) String userId,
-				@RequestParam(defaultValue="100") int amount) {
+				@RequestParam(defaultValue="10000") int amount) {
 
 			Logger logg = Logger.getLogger("spring");
 
@@ -341,16 +341,13 @@ public class WalletController {
 
 				EWallet wallet = walletService.getWalletByUser(userId);
 
-				if (wallet.getAmount()<100 || wallet.getAmount()<amount) {
+				if (wallet.getAmount()<10000 || wallet.getAmount()<amount) {
 					res.put("status", 210);
 					res.put("message", "嘀嘀币不足");
 					return res;
 				}
-
-				
-				
+								
 				String openId = user.getWechatId();
-
 
 				logg.info("余额充足可以退款: " + userId);
 
@@ -489,6 +486,8 @@ public class WalletController {
 			return res;
 		}
 	}
+	
+	
 	
 	
 	
