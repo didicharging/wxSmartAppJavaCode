@@ -12,12 +12,11 @@ public class EDevice {
 	
 	public static Integer ELECTRIC_LESS=1;	
 	public static Integer ELECTRIC_ENOUGH=2;
-	
-
 	public static Integer IN_CHARGEING=3;
 	public static Integer DEVICE_BAD=99;
 	public static Integer DEVICE_REPAIR=98;
 	public static Integer DEVICE_NULL=100;
+	
 	
 	public static Integer IN_READY=4;
 	public static Integer IN_BUSY=5;

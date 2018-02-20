@@ -6,7 +6,7 @@ import java.util.Date;
 public class EWalletLog {
 	
 
-	//定单类型共有多少种 1、充值    2、付押金  3、退租金  4、交欠款  5、退余额
+	//定单类型共有多少种 0、充值  2、退共享金     3、退租金  4、付押金    5、投资  8、交欠款  9、设备购买
 	
 	public static final int BILL_CHARGE_DDB= 0;
 	

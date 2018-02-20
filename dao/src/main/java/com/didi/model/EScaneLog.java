@@ -28,7 +28,7 @@ public class EScaneLog {
 	public static Integer BUY_DEVICE=5;
 	
 	//赔偿设备
-	public static Integer COMPENSATE_USER=5;	
+//	public static Integer COMPENSATE_USER=5;	
 	//换电
 	public static Integer CHANGE_DEVICE=6;
 	//设备报废
@@ -51,6 +51,9 @@ public class EScaneLog {
 	
 	//用户充电
 	public static Integer USER_CHARGE=14;
+	
+	
+	
 	
     private String id;
 

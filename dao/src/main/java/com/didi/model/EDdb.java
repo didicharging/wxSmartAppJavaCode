@@ -26,6 +26,7 @@ public class EDdb {
 	public static Integer MONEY_GIVE=11; //	
 		
 	public static Integer BUY_DEVICE=12;
+	
 //	public static Integer START_SERVICE=13;
 	
     private String id;
